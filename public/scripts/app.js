@@ -44,7 +44,7 @@ $(document).ready(function() {
   var source = $('#albums-template').html();
   var template = Handlebars.compile(source);
 
-  var renderedHTML = template({album: sampleAlbums[0]});
+  var renderedHTML = template({albums: sampleAlbums});
   console.log(renderedHTML);
 
   renderAlbum(renderedHTML);
@@ -58,7 +58,7 @@ $(document).ready(function() {
 
 
 // this function takes a single album and renders it to the page
-function renderAlbum(album) {
-  console.log('rendering album:', album);
-  $('#albums').append(album);
+function renderAlbum(albums) {
+  console.log('rendering album:', albums);
+  $('#albums').append(albums);
 }
