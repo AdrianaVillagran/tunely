@@ -23,6 +23,24 @@ $(document).ready(function() {
     }
    });
 
+var $newAlbum = $('#album-form');
+
+$newAlbum.on('submit', function(event) {
+  event.preventDefault();
+  var albumInput = $(this).serialize();
+  console.log("post this query", albumInput);
+  $.ajax({
+    method: "POST",
+    url: '/api/albums',
+    data: albumInput,
+    success: prependNewAlbum,
+    error: createAlbumError,
+  });
+
+  $newAlbum[0].reset();
+});
+
+
 
   var source = $('#albums-template').html();
   template = Handlebars.compile(source);
@@ -34,8 +52,17 @@ $(document).ready(function() {
 function renderAlbums(json) {
   allAlbums = json;
   allAlbums.forEach(function (album) {
-    var renderedHTML = template({album: album});
-    $('#albums').append(renderedHTML);
+    prependNewAlbum(album);
   });
+}
 
+function prependNewAlbum(album) {
+  var renderedHTML = template({album: album});
+  $('#albums').prepend(renderedHTML);
+}
+
+
+
+function createAlbumError(err) {
+  console.log("there was an error creating an album", err);
 }
