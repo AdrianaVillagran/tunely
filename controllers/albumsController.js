@@ -49,7 +49,13 @@ function show(req, res) {
 }
 
 function destroy(req, res) {
-  // FILL ME IN !
+  var albumId = req.params.id;
+  db.Album.findOneAndRemove({_id: albumId}, function (err, foundAlbum) {
+    if (err) {
+      res.status(404).send("Album to be deleted was not found");
+    }
+    res.status(200).json(foundAlbum);
+  });
 }
 
 function update(req, res) {

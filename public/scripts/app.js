@@ -12,9 +12,11 @@ var template;
 $(document).ready(function() {
   console.log('app.js loaded!');
 
+//compiles handlebars template
   var source = $('#albums-template').html();
   template = Handlebars.compile(source);
 
+//'get' call for album index data
   $.ajax ({
     method: 'GET',
     url: '/api/albums',
@@ -24,6 +26,7 @@ $(document).ready(function() {
 
 var $newAlbum = $('#album-form');
 
+//submit new album
 $newAlbum.on('submit', function(event) {
   event.preventDefault();
   var albumInput = $(this).serialize();
@@ -32,13 +35,14 @@ $newAlbum.on('submit', function(event) {
     method: "POST",
     url: '/api/albums',
     data: albumInput,
-    success: renderAlbum,
+    success: handleAlbumSuccess,
     error: createAlbumError,
   });
 
   $newAlbum[0].reset();
 });
 
+//event listener for opening song modal
 $("#albums").on('click','.add-song', function(event) {
   // console.log('This add song button clicked!');
   var id= $(this).closest('.album').data('album-id');
@@ -47,6 +51,7 @@ $("#albums").on('click','.add-song', function(event) {
   $('#songModal').modal();
 });
 
+//event listener for adding songs
 $('#saveSong').on('click', function(event) {
   event.preventDefault();
   console.log("new song submit works");
@@ -71,11 +76,33 @@ $('#saveSong').on('click', function(event) {
   });
 });
 
+//delete album click event
+$('#albums').on('click', '.delete-song', function(event){
+  event.preventDefault();
+  console.log('delete click event works!');
+  var albumId = $(this).closest('.album').data('album-id');
+  console.log("The id of the album to be deleted is:", albumId);
+  $.ajax ({
+    method: 'DELETE',
+    url: '/api/albums/' + albumId,
+    success: function(json) {
+      console.log("album delete successful");
+    },
+    error: function(err) {
+      console.log("the album was not successfully deleted", err);
+    }
+  });
+
+});
+
 
 
 
 });
 
+//End of Document ready
+
+//handles album success
 function handleAlbumSuccess(albums) {
     albums.forEach(function(album) {
       renderAlbum(album);
@@ -90,6 +117,12 @@ function renderAlbum(album) {
 
 }
 
+//
+function createAlbumError(err) {
+  console.log("there was an error creating an album", err);
+}
+
+//New Song Post
 function handleNewSongSubmit(json) {
   var albums = json;
   console.log(albums);
@@ -102,11 +135,6 @@ function handleNewSongSubmit(json) {
   $("#trackNumber").val("");
 }
 
-
 function handleNewSongError(err) {
   console.log('whoops, there was an error on song submit', err);
-}
-
-function createAlbumError(err) {
-  console.log("there was an error creating an album", err);
 }
