@@ -7,21 +7,16 @@
 
 
 var allAlbums=[];
-var template;
 
 $(document).ready(function() {
   console.log('app.js loaded!');
 
-  $.ajax({
-    method: 'GET',
-    url: '/api/albums',
-    success: renderAlbums,
-    error: function handleError(err) {
-      if(err) {
-        console.log(err);
-      }
-    }
-   });
+$.get('/api/albums').success(function (albums) {
+    albums.forEach(function(album) {
+      renderAlbum(album);
+    });
+  });
+
 
 var $newAlbum = $('#album-form');
 
@@ -42,23 +37,28 @@ $newAlbum.on('submit', function(event) {
 
 
 
-  var source = $('#albums-template').html();
-  template = Handlebars.compile(source);
-
 
 });
 
 // this function takes a single album and renders it to the page
-function renderAlbums(json) {
-  allAlbums = json;
-  allAlbums.forEach(function (album) {
-    prependNewAlbum(album);
-  });
+function renderAlbum(album) {
+  var albumHtml = $('#albums-template').html();
+  var albumsTemplate = Handlebars.compile(albumHtml);
+  var html = albumsTemplate(album);
+  $('#albums').prepend(html);
+  $('ul').append(buildSongsHtml(album.songs));
 }
 
-function prependNewAlbum(album) {
-  var renderedHTML = template({album: album});
-  $('#albums').prepend(renderedHTML);
+function buildSongsHtml(songs) {
+  var separator = "  &ndash; ";
+  songs.forEach(function(song) {
+     separator = separator + "(" + song.trackNumber + ") " + song.name + " &ndash; ";
+  });
+  var songsHtml  = "<li class='list-group-item'>" +
+                     "<h4 class='inline-header'>Songs:</h4>" +
+                       "<span>" + separator + "</span>" +
+                   "</li>";
+  return songsHtml;
 }
 
 
