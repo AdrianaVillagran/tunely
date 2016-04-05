@@ -56,8 +56,6 @@ albumList.forEach(function(album) {
   album.songs = sampleSongs;
 });
 
-console.log(albumList);
-
 
 db.Album.remove({}, function(err, albums){
 

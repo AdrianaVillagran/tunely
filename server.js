@@ -41,31 +41,12 @@ app.get('/', function homepage (req, res) {
 
 app.get('/api', controllers.api.index);
 
-app.get('/api/albums', function(req,res) {
-  db.Album.find(function (err, albums) {
-    if(err) {
-      console.log(err);
-    }
-    console.log(albums);
-    res.json(albums);
-  });
-});
+app.get('/api/albums', controllers.albums.index);
 
-app.post('/api/albums', function(req,res) {
-  var newAlbum = new db.Album({
-    name: req.body.name,
-    artistName: req.body.artistName,
-    genres: req.body.genres,
-    releaseDate:req.body.releaseDate
-  });
-  console.log("posting this new album", newAlbum);
-  newAlbum.save(function(err, savedAlbum) {
-    if(err) {
-      console.log("there was an error creating album", savedAlbum);
-    }
-    res.json(savedAlbum);
-  });
-});
+app.post('/api/albums', controllers.albums.create);
+
+app.post('/api/albums/:album_id/songs', controllers.songs.create);
+
 
 /**********
  * SERVER *

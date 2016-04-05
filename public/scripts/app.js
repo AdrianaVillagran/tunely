@@ -7,14 +7,18 @@
 
 
 var allAlbums=[];
+var template;
 
 $(document).ready(function() {
   console.log('app.js loaded!');
 
-$.get('/api/albums').success(function (albums) {
-    albums.forEach(function(album) {
-      renderAlbum(album);
-    });
+  var source = $('#albums-template').html();
+  template = Handlebars.compile(source);
+
+  $.ajax ({
+    method: 'GET',
+    url: '/api/albums',
+    success: handleAlbumSuccess,
   });
 
 
@@ -36,31 +40,72 @@ $newAlbum.on('submit', function(event) {
 });
 
 $("#albums").on('click','.add-song', function(event) {
-  console.log('This add song button clicked!');
+  // console.log('This add song button clicked!');
   var id= $(this).closest('.album').data('album-id');
-  console.log('id', id);
+  // console.log('id', id);
   $( "#songModal" ).attr( "data-album-id", id);
   $('#songModal').modal();
 });
 
-$('#songModal').on('submit')
+$('#saveSong').on('click', function(event) {
+  event.preventDefault();
+  console.log("new song submit works");
+
+  var newTrackNumber = $('#trackNumber').val();
+  var newSongName = $('#songName').val();
+
+  var songInput = {
+                    name: newSongName,
+                    trackNumber: newTrackNumber
+                  };
+  console.log(songInput);
+  var albumId = $('#songModal').attr('data-album-id');
+  console.log('The album id is', albumId);
+
+  $.ajax({
+    method: "POST",
+    url: '/api/albums/' + albumId + '/songs',
+    data: songInput,
+    success: handleNewSongSubmit,
+    error: handleNewSongError
+  });
+});
 
 
 
 
 });
 
+function handleAlbumSuccess(albums) {
+    albums.forEach(function(album) {
+      renderAlbum(album);
+    });
+}
+
 // this function takes a single album and renders it to the page
 function renderAlbum(album) {
-  var source = $('#albums-template').html();
-  var template = Handlebars.compile(source);
+
   var albumHtml = template(album);
   $('#albums').prepend(albumHtml);
+
+}
+
+function handleNewSongSubmit(json) {
+  var albums = json;
+  console.log(albums);
+  console.log('The new song was successfully added to the album');
+  $("#albums").empty();
+  handleAlbumSuccess(albums);
+
+  $('#songModal').modal('hide');
+  $("#songName").val("");
+  $("#trackNumber").val("");
 }
 
 
-
-
+function handleNewSongError(err) {
+  console.log('whoops, there was an error on song submit', err);
+}
 
 function createAlbumError(err) {
   console.log("there was an error creating an album", err);
