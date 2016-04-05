@@ -35,6 +35,16 @@ $newAlbum.on('submit', function(event) {
   $newAlbum[0].reset();
 });
 
+$("#albums").on('click','.add-song', function(event) {
+  console.log('This add song button clicked!');
+  var id= $(this).closest('.album').data('album-id');
+  console.log('id', id);
+  $( "#songModal" ).attr( "data-album-id", id);
+  $('#songModal').modal();
+});
+
+$('#songModal').on('submit')
+
 
 
 
