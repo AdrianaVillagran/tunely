@@ -37,6 +37,13 @@ function create(req, res) {
 }
 
 function show(req, res) {
+  var albumId = req.params.id;
+  db.Album.findById(albumId, function(err, foundAlbum) {
+    if (err) {
+      res.status(404).send("Album not found");
+    }
+    res.status(202).json(foundAlbum);
+  });
 
 
 }
