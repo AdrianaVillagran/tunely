@@ -8,6 +8,7 @@
 
 var allAlbums=[];
 var template;
+var thisOutsideTheFunction;
 
 $(document).ready(function() {
   console.log('app.js loaded!');
@@ -77,23 +78,7 @@ $('#saveSong').on('click', function(event) {
 });
 
 //delete album click event
-$('#albums').on('click', '.delete-song', function(event){
-  event.preventDefault();
-  console.log('delete click event works!');
-  var albumId = $(this).closest('.album').data('album-id');
-  console.log("The id of the album to be deleted is:", albumId);
-  $.ajax ({
-    method: 'DELETE',
-    url: '/api/albums/' + albumId,
-    success: function(json) {
-      console.log("album delete successful");
-    },
-    error: function(err) {
-      console.log("the album was not successfully deleted", err);
-    }
-  });
-
-});
+$('#albums').on('click', '.delete-song', deleteAlbum);
 
 
 
@@ -115,6 +100,27 @@ function renderAlbum(album) {
   var albumHtml = template(album);
   $('#albums').prepend(albumHtml);
 
+}
+
+//handles Deleted album success
+function deleteAlbum(event){
+  event.preventDefault();
+  var albumId = $(this).closest('.album').data('album-id');
+  //if data-album-id === deletedAlbum._id then remove()
+  var dataTag = $('.album').attr('data-album-id');
+
+  $('div[data-album-id=' + albumId+ ']').remove();
+  //.remove();
+  $.ajax ({
+    method: 'DELETE',
+    url: '/api/albums/' + albumId,
+    success: function(json) {
+      console.log("album successfully deleted");
+    },
+    error: function(err) {
+      console.log("the album was not successfully deleted", err);
+    }
+  });
 }
 
 //
