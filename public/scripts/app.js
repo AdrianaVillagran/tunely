@@ -28,7 +28,7 @@ $newAlbum.on('submit', function(event) {
     method: "POST",
     url: '/api/albums',
     data: albumInput,
-    success: prependNewAlbum,
+    success: renderAlbum,
     error: createAlbumError,
   });
 
@@ -42,24 +42,13 @@ $newAlbum.on('submit', function(event) {
 
 // this function takes a single album and renders it to the page
 function renderAlbum(album) {
-  var albumHtml = $('#albums-template').html();
-  var albumsTemplate = Handlebars.compile(albumHtml);
-  var html = albumsTemplate(album);
-  $('#albums').prepend(html);
-  $('ul').append(buildSongsHtml(album.songs));
+  var source = $('#albums-template').html();
+  var template = Handlebars.compile(source);
+  var albumHtml = template(album);
+  $('#albums').prepend(albumHtml);
 }
 
-function buildSongsHtml(songs) {
-  var separator = "  &ndash; ";
-  songs.forEach(function(song) {
-     separator = separator + "(" + song.trackNumber + ") " + song.name + " &ndash; ";
-  });
-  var songsHtml  = "<li class='list-group-item'>" +
-                     "<h4 class='inline-header'>Songs:</h4>" +
-                       "<span>" + separator + "</span>" +
-                   "</li>";
-  return songsHtml;
-}
+
 
 
 
